@@ -15,7 +15,32 @@ class FamilyTree:
             file.write(f"{person.name}, {person.parent1}, {person.parent2}\n")
 
     def read(self, file):
-        pass
+        try:
+            with open(self.file, "r") as f:
+                data = f.readlines()
+                print("\n=== DATA KELUARGA ===")
+                for line in data:
+                    name, p1, p2 = line.strip().split(",")
+                    print(f"Nama: {name}, Parent1: {p1}, Parent2: {p2}")
+        except FileNotFoundError:
+            print("File belum ada")
+
+    def delete(self, target_name):
+        try:
+            with open(self.file, "r") as f:
+                data = f.readlines()
+
+            with open(self.file, "w") as f:
+                for line in data:
+                    name, p1, p2 = line.strip().split(",")
+
+                    if name != target_name:
+                        f.write(line)
+
+            print("Data berhasil dihapus")
+
+        except FileNotFoundError:
+            print("File belum ada")
 
         
 file = "bleh.csv"
