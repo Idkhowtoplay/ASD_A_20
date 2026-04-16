@@ -42,6 +42,28 @@ class FamilyTree:
         except FileNotFoundError:
             print("File belum ada")
 
+    def update(self, target_name, new_p1, new_p2):
+        try:
+            with open(self.filename, "r") as f:
+                lines = f.readlines()
+
+            found = False
+            with open(self.filename, "w") as f:
+                for line in lines:
+                    name, p1, p2 = line.strip().split(",")
+                    if name == target_name:
+                        f.write(f"{name},{new_p1},{new_p2}\n")
+                        found = True
+                    else:
+                        f.write(line)
+
+            if found:
+                print(f"Data {target_name} berhasil diperbarui.")
+            else:
+                print(f"Data {target_name} tidak ditemukan.")
+        except FileNotFoundError:
+            print("File tidak ditemukan.")
+
         
 file = "bleh.csv"
 ft = FamilyTree()
