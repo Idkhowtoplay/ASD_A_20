@@ -44,11 +44,11 @@ class FamilyTree:
 
     def update(self, target_name, new_p1, new_p2):
         try:
-            with open(self.filename, "r") as f:
+            with open(self.file, "r") as f:
                 lines = f.readlines()
 
             found = False
-            with open(self.filename, "w") as f:
+            with open(self.file, "w") as f:
                 for line in lines:
                     name, p1, p2 = line.strip().split(",")
                     if name == target_name:
