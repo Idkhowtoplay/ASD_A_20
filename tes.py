@@ -16,7 +16,7 @@ class FamilyTree:
 
     def read(self, file):
         try:
-            with open(self.file, "r") as f:
+            with open(file, "r") as f:
                 data = f.readlines()
                 print("\n=== DATA KELUARGA ===")
                 for line in data:
@@ -25,12 +25,12 @@ class FamilyTree:
         except FileNotFoundError:
             print("File belum ada")
 
-    def delete(self, target_name):
+    def delete(self, file,  target_name):
         try:
-            with open(self.file, "r") as f:
+            with open(file, "r") as f:
                 data = f.readlines()
 
-            with open(self.file, "w") as f:
+            with open(file, "w") as f:
                 for line in data:
                     name, p1, p2 = line.strip().split(",")
 
@@ -42,9 +42,9 @@ class FamilyTree:
         except FileNotFoundError:
             print("File belum ada")
 
-    def update(self, target_name, new_p1, new_p2):
+    def update(self, file, target_name, new_p1, new_p2):
         try:
-            with open(self.file, "r") as f:
+            with open(file, "r") as f:
                 lines = f.readlines()
 
             found = False
@@ -64,8 +64,8 @@ class FamilyTree:
         except FileNotFoundError:
             print("File tidak ditemukan.")
 
-        
+      
 file = "bleh.csv"
 ft = FamilyTree()
-ft.create("Alaya", 1, 2, file)
-    
+ft.update(file, "Alaya", "lll", "00")   
+ft.delete(file,"Alaya")
