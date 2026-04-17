@@ -48,7 +48,7 @@ class FamilyTree:
                 lines = f.readlines()
 
             found = False
-            with open(self.file, "w") as f:
+            with open(file, "w") as f:
                 for line in lines:
                     name, p1, p2 = line.strip().split(",")
                     if name == target_name:
