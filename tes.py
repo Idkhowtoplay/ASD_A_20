@@ -1,71 +1,233 @@
 class Person:
-    def __init__(self, name, parent1, parent2):
+
+    def __init__(self, name, parent1="-", parent2="-"):
+
         self.name = name
         self.parent1 = parent1
         self.parent2 = parent2
-        
+
 
 class FamilyTree:
+
     def __init__(self):
-        self.head = None
 
+        self.members = {}
+
+    # LOAD DATA
+    def load_from_file(self, file):
+
+        try:
+
+            with open(file, "r") as f:
+
+                for line in f:
+
+                    data = line.strip().split(",")
+
+                    if len(data) == 3:
+
+                        name, p1, p2 = data
+
+                        self.members[name] = Person(
+                            name,
+                            p1,
+                            p2
+                        )
+
+        except FileNotFoundError:
+
+            pass
+
+    # SAVE DATA
+    def save_all(self, file):
+
+        with open(file, "w") as f:
+
+            for person in self.members.values():
+
+                f.write(
+                    f"{person.name},"
+                    f"{person.parent1},"
+                    f"{person.parent2}\n"
+                )
+
+    # CREATE
     def create(self, name, parent1, parent2, file):
-        with open(file, "w") as file:
-            person = Person(name, parent1, parent2)
-            file.write(f"{person.name}, {person.parent1}, {person.parent2}\n")
 
-    def read(self, file):
-        try:
-            with open(file, "r") as f:
-                data = f.readlines()
-                print("\n=== DATA KELUARGA ===")
-                for line in data:
-                    name, p1, p2 = line.strip().split(",")
-                    print(f"Nama: {name}, Parent1: {p1}, Parent2: {p2}")
-        except FileNotFoundError:
-            print("File belum ada")
+        if name in self.members:
 
-    def delete(self, file,  target_name):
-        try:
-            with open(file, "r") as f:
-                data = f.readlines()
+            print("Data sudah ada!")
+            return
 
-            with open(file, "w") as f:
-                for line in data:
-                    name, p1, p2 = line.strip().split(",")
+        self.members[name] = Person(
+            name,
+            parent1,
+            parent2
+        )
 
-                    if name != target_name:
-                        f.write(line)
+        self.save_all(file)
 
-            print("Data berhasil dihapus")
+        print("Data berhasil ditambahkan!")
 
-        except FileNotFoundError:
-            print("File belum ada")
+    # READ
+    def read(self):
 
-    def update(self, file, target_name, new_p1, new_p2):
-        try:
-            with open(file, "r") as f:
-                lines = f.readlines()
+        print("\n============== DATA KELUARGA ============== ")
 
-            found = False
-            with open(file, "w") as f:
-                for line in lines:
-                    name, p1, p2 = line.strip().split(",")
-                    if name == target_name:
-                        f.write(f"{name},{new_p1},{new_p2}\n")
-                        found = True
-                    else:
-                        f.write(line)
+        if not self.members:
 
-            if found:
-                print(f"Data {target_name} berhasil diperbarui.")
-            else:
-                print(f"Data {target_name} tidak ditemukan.")
-        except FileNotFoundError:
-            print("File tidak ditemukan.")
+            print("Belum ada data.")
+            return
 
-      
-file = "bleh.csv"
-ft = FamilyTree()
-ft.update(file, "Alaya", "lll", "00")   
-ft.delete(file,"Alaya")
+        # HEADER TABEL
+        print("=" * 45)
+        print(f"{'Anak':<15} {'Ayah':<15} {'Ibu':<15}")
+        print("=" * 45)
+
+        # ISI TABEL
+        for p in self.members.values():
+
+            print(
+                f"{p.name:<15} "
+                f"{p.parent1:<15} "
+                f"{p.parent2:<15}"
+            )
+
+        print("=" * 45)
+
+    # UPDATE
+    def update(self, name, new_p1, new_p2, file):
+
+        if name in self.members:
+
+            self.members[name].parent1 = new_p1
+            self.members[name].parent2 = new_p2
+
+            self.save_all(file)
+
+            print("Data berhasil diupdate!")
+
+        else:
+
+            print("Data tidak ditemukan!")
+
+    # DELETE
+    def delete(self, name, file):
+
+        if name in self.members:
+
+            del self.members[name]
+
+            self.save_all(file)
+
+            print("Data berhasil dihapus!")
+
+        else:
+
+            print("Data tidak ditemukan!")
+
+    # SEARCH
+    def search(self, name):
+
+        if name in self.members:
+
+            p = self.members[name]
+
+            print("\n=== DATA DITEMUKAN ===")
+
+            print(f"Anak     : {p.name}")
+            print(f"Ayah     : {p.parent1}")
+            print(f"Ibu      : {p.parent2}")
+
+        else:
+
+            print("Data tidak ditemukan!")
+
+    # CARI ANAK
+    def get_children(self, name):
+
+        children = []
+
+        for p in self.members.values():
+
+            if (
+                p.parent1 == name
+                or
+                p.parent2 == name
+            ):
+
+                children.append(p.name)
+
+        return children
+
+    # CARI SAUDARA
+    def get_siblings(self, name):
+
+        if name not in self.members:
+
+            return []
+
+        target = self.members[name]
+
+        siblings = []
+
+        for p in self.members.values():
+
+            if p.name != name:
+
+                same_parent1 = (
+                    p.parent1 == target.parent1
+                    and
+                    p.parent1 != "-"
+                )
+
+                same_parent2 = (
+                    p.parent2 == target.parent2
+                    and
+                    p.parent2 != "-"
+                )
+
+                if same_parent1 or same_parent2:
+
+                    siblings.append(p.name)
+
+        return siblings
+
+    # TAMPILKAN SILSILAH
+    def show_family(self, name, level=0):
+
+        if (
+            name == "-"
+            or
+            name not in self.members
+        ):
+            return
+
+        print("  " * level + f"- {name}")
+
+        person = self.members[name]
+
+        self.show_family(
+            person.parent1,
+            level + 1
+        )
+
+        self.show_family(
+            person.parent2,
+            level + 1
+        )
+
+    # TAMPILKAN KETURUNAN
+    def show_descendants(self, name, level=0):
+
+        print("  " * level + f"- {name}")
+
+        children = self.get_children(name)
+
+        for child in children:
+
+            self.show_descendants(
+                child,
+                level + 1
+            )
+            
