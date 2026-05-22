@@ -13,7 +13,12 @@ class FamilyTree:
         try:
             with open(file, "r") as f:
                 for line in f:
-                    name, p1, p2 = line.strip().split(",")
+                    data = line.strip().split(",")
+
+                    if len(data) != 3:
+                        continue
+
+                    name, p1, p2 = data
                     self.members[name] = Person(name, p1, p2)
         except FileNotFoundError:
             pass
@@ -35,20 +40,12 @@ class FamilyTree:
             print("Belum ada data.")
             return
 
-        for p in self.members.values():
-            print(f"\n{p.name}")
-            
-            # Ayah
-            if p.parent1 != "-":
-                print(f"├── Ayah: {p.parent1}")
-            else:
-                print("├── Ayah: -")
-
-            # Ibu
-            if p.parent2 != "-":
-                print(f"└── Ibu : {p.parent2}")
-            else:
-                print("└── Ibu : -")
+        for i, p in enumerate(self.members.values(), start=1):
+            print(f"[{i}]")
+            print(f"{p.parent1} ── {p.parent2}")
+            print("      │")
+            print(f"    {p.name}")
+            print("-" * 25)
 
     def update(self, name, new_p1, new_p2, file):
         if name in self.members:
@@ -66,6 +63,24 @@ class FamilyTree:
             print("Data berhasil dihapus!")
         else:
             print("Data tidak ditemukan!")
+    
+    def search(self, keyword):
+        found = False
+
+        for p in self.members.values():
+
+            if keyword.lower() in p.name.lower():
+
+                print("\n=== DATA DITEMUKAN ===")
+                print(f"{p.parent1} ── {p.parent2}")
+                print("      │")
+                print(f"    {p.name}")
+                print("-" * 25)
+
+                found = True
+
+        if not found:
+            print("Data tidak ditemukan!")
 
 
 def main():
@@ -79,7 +94,8 @@ def main():
         print("2. Lihat Semua Data (Tree)")
         print("3. Update Data")
         print("4. Hapus Data")
-        print("5. Keluar")
+        print("5. Cari Data")
+        print("6. Keluar")
 
         pilihan = input("Pilih menu: ")
 
@@ -98,11 +114,11 @@ def main():
             p2 = input("Ibu baru: ")
             ft.update(name, p1, p2, file)
 
-        elif pilihan == "4":
-            name = input("Nama: ")
-            ft.delete(name, file)
-
         elif pilihan == "5":
+            keyword = input("Cari nama: ")
+            ft.search(keyword)
+
+        elif pilihan == "6":
             print("Keluar program...")
             break
 
