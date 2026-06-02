@@ -333,7 +333,53 @@ class FamilyTree:
 
         print("Undo berhasil!")
 
+    def _get_middle(self, head):
+        if head is None:
+            return head
+        slow = head
+        fast = head
+        while fast.next and fast.next.next:
+            slow = slow.next
+            fast = fast.next.next
+        return slow
 
+    def _sorted_merge(self, a, b):
+        if a is None:
+            return b
+        if b is None:
+            return a
+        if a.person.anak.lower() <= b.person.anak.lower():
+            result = a
+            result.next = self._sorted_merge(a.next, b)
+        else:
+            result = b
+            result.next = self._sorted_merge(a, b.next)
+        return result
+
+    def _merge_sort(self, head):
+            if head is None or head.next is None:
+                return head
+
+            middle = self._get_middle(head)
+            next_to_middle = middle.next
+            middle.next = None
+
+            left = self._merge_sort(head)
+            right = self._merge_sort(next_to_middle)
+
+            sorted_list = self._sorted_merge(left, right)
+            return sorted_list
+
+    def sort_data(self, file):
+        if self.head is None or self.head.next is None:
+            print("Data terlalu sedikit untuk diurutkan (minimal butuh 2 data).")
+            return
+
+        self.head = self._merge_sort(self.head)
+        
+        self.save_all(file)
+        print("Data berhasil diurutkan berdasarkan nama anak (A-Z)!")
+        
 def main():
     file = "bleh.csv"
 
@@ -348,7 +394,8 @@ def main():
         print("4. Hapus Data")
         print("5. Cari Data")
         print("6. Undo")
-        print("7. Keluar")
+        print("7. Urutkan Data Anak (A-Z)")
+        print("8. Keluar")
 
         pilihan = input("Pilih menu: ")
 
@@ -412,6 +459,9 @@ def main():
             ft.undo(file)
 
         elif pilihan == "7":
+            ft.sort_data(file)
+
+        elif pilihan == "8":
             print("Keluar program...")
             break
 
