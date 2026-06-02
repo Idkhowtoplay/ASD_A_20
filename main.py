@@ -128,28 +128,26 @@ class FamilyTree:
         print("Data berhasil ditambahkan!")
 
     def display_tree(self, p):
-        print("\n" + "=" * 40)
-        print(f"FAMILY TREE : {p.anak}")
-        print("=" * 40)
+        print("\n" + "═" * 55)
+        print(f" 🌳 SILSILAH KELUARGA : {p.anak.upper()} ".center(55, " "))
+        print("═" * 55)
 
-        print("\n[Kakek/Nenek Ayah]")
-        print(f"{p.kakek_ayah} ── {p.nenek_ayah}")
-        print("     │")
-        print(f"    {p.ayah}")
+        print("\n 👨 [KELUARGA PIHAK AYAH]")
+        print(f"    👴 {p.kakek_ayah} ── 👵 {p.nenek_ayah}")
+        print("           │")
+        print(f"           └── 👨 {p.ayah}")
 
-        print("\n[Kakek/Nenek Ibu]")
-        print(f"{p.kakek_ibu} ── {p.nenek_ibu}")
-        print("     │")
-        print(f"    {p.ibu}")
+        print("\n 👩 [KELUARGA PIHAK IBU]")
+        print(f"    👴 {p.kakek_ibu} ── 👵 {p.nenek_ibu}")
+        print("           │")
+        print(f"           └── 👩 {p.ibu}")
 
-        print("\n[Ayah & Ibu]")
-        print(f"{p.ayah} ── {p.ibu}")
-        print("     │")
+        print("\n 👨‍👩‍👦 [KELUARGA INTI]")
+        print(f"    👨 {p.ayah} ── 👩 {p.ibu}")
+        print("           │")
+        print(f"           └── 🧒 {p.anak}")
 
-        print("\n[Anak]")
-        print(p.anak)
-
-        print("=" * 40)
+        print("\n" + "═" * 55)
 
     def count_data(self):
         total = 0
