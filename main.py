@@ -1,8 +1,21 @@
 class Person:
-    def __init__(self, name, parent1, parent2):
-        self.name = name
-        self.parent1 = parent1
-        self.parent2 = parent2
+    def __init__(
+        self,
+        anak,
+        ayah,
+        ibu,
+        kakek_ayah,
+        nenek_ayah,
+        kakek_ibu,
+        nenek_ibu
+    ):
+        self.anak = anak
+        self.ayah = ayah
+        self.ibu = ibu
+        self.kakek_ayah = kakek_ayah
+        self.nenek_ayah = nenek_ayah
+        self.kakek_ibu = kakek_ibu
+        self.nenek_ibu = nenek_ibu
 
 
 class Node:
@@ -16,11 +29,11 @@ class FamilyTree:
         self.head = None
         self.history = []  # Stack
 
-    def find(self, name):
+    def find(self, anak):
         current = self.head
 
         while current:
-            if current.person.name == name:
+            if current.person.anak.lower() == anak.lower():
                 return current
 
             current = current.next
@@ -33,12 +46,10 @@ class FamilyTree:
                 for line in f:
                     data = line.strip().split(",")
 
-                    if len(data) != 3:
+                    if len(data) != 7:
                         continue
 
-                    name, p1, p2 = data
-
-                    person = Person(name, p1, p2)
+                    person = Person(*data)
                     new_node = Node(person)
 
                     if self.head is None:
@@ -60,15 +71,44 @@ class FamilyTree:
 
             while current:
                 p = current.person
-                f.write(f"{p.name},{p.parent1},{p.parent2}\n")
+
+                f.write(
+                    f"{p.anak},"
+                    f"{p.ayah},"
+                    f"{p.ibu},"
+                    f"{p.kakek_ayah},"
+                    f"{p.nenek_ayah},"
+                    f"{p.kakek_ibu},"
+                    f"{p.nenek_ibu}\n"
+                )
+
                 current = current.next
 
-    def create(self, name, parent1, parent2, file):
-        if self.find(name):
-            print("Nama sudah ada!")
+    def create(
+        self,
+        anak,
+        ayah,
+        ibu,
+        kakek_ayah,
+        nenek_ayah,
+        kakek_ibu,
+        nenek_ibu,
+        file
+    ):
+        if self.find(anak):
+            print("Data sudah ada!")
             return
 
-        person = Person(name, parent1, parent2)
+        person = Person(
+            anak,
+            ayah,
+            ibu,
+            kakek_ayah,
+            nenek_ayah,
+            kakek_ibu,
+            nenek_ibu
+        )
+
         new_node = Node(person)
 
         if self.head is None:
@@ -81,60 +121,56 @@ class FamilyTree:
 
             current.next = new_node
 
-        self.history.append(("create", name))
+        self.history.append(("create", anak))
 
         self.save_all(file)
 
         print("Data berhasil ditambahkan!")
 
-    def display_tree(self, person):
-        ayah_node = self.find(person.parent1)
-        ibu_node = self.find(person.parent2)
+    def display_tree(self, p):
+        print("\n" + "=" * 40)
+        print(f"FAMILY TREE : {p.anak}")
+        print("=" * 40)
 
-        kakek_ayah = "-"
-        nenek_ayah = "-"
-        kakek_ibu = "-"
-        nenek_ibu = "-"
+        print("\n[Kakek/Nenek Ayah]")
+        print(f"{p.kakek_ayah} ── {p.nenek_ayah}")
+        print("     │")
+        print(f"    {p.ayah}")
 
-        if ayah_node:
-            kakek_ayah = ayah_node.person.parent1
-            nenek_ayah = ayah_node.person.parent2
+        print("\n[Kakek/Nenek Ibu]")
+        print(f"{p.kakek_ibu} ── {p.nenek_ibu}")
+        print("     │")
+        print(f"    {p.ibu}")
 
-        if ibu_node:
-            kakek_ibu = ibu_node.person.parent1
-            nenek_ibu = ibu_node.person.parent2
+        print("\n[Ayah & Ibu]")
+        print(f"{p.ayah} ── {p.ibu}")
+        print("     │")
 
-        print(f"Anak: {person.name}")
-        print(f"├── Ayah: {person.parent1}")
-        print(f"│   ├── Kakek: {kakek_ayah}")
-        print(f"│   └── Nenek: {nenek_ayah}")
-        print(f"└── Ibu: {person.parent2}")
-        print(f"    ├── Kakek: {kakek_ibu}")
-        print(f"    └── Nenek: {nenek_ibu}")
-        print("-" * 35)
+        print("\n[Anak]")
+        print(p.anak)
+
+        print("=" * 40)
 
     def count_data(self):
-        count = 0
+        total = 0
         current = self.head
 
         while current:
-            count += 1
+            total += 1
             current = current.next
 
-        return count
+        return total
 
     def read(self):
-        print("\n=== POHON KELUARGA ===")
-
         if self.head is None:
             print("Belum ada data.")
             return
 
-        per_page = 2
-        shown = 0
-
-        current = self.head
         total = self.count_data()
+        current = self.head
+
+        shown = 0
+        per_page = 2
 
         while current:
             self.display_tree(current.person)
@@ -145,49 +181,77 @@ class FamilyTree:
                 lanjut = input(
                     f"Tampil {shown}/{total} data. "
                     "Tekan Enter untuk lanjut "
-                    "(atau ketik 'q' untuk berhenti): "
+                    "(atau q untuk keluar): "
                 )
 
                 if lanjut.lower() == "q":
-                    print("Kembali ke menu utama.")
                     return
 
             current = current.next
 
-    def update(self, name, new_p1, new_p2, file):
-        node = self.find(name)
+    def update(
+        self,
+        anak,
+        ayah,
+        ibu,
+        kakek_ayah,
+        nenek_ayah,
+        kakek_ibu,
+        nenek_ibu,
+        file
+    ):
+        node = self.find(anak)
 
-        if node:
-            old_p1 = node.person.parent1
-            old_p2 = node.person.parent2
-
-            self.history.append(
-                ("update", name, old_p1, old_p2)
-            )
-
-            node.person.parent1 = new_p1
-            node.person.parent2 = new_p2
-
-            self.save_all(file)
-
-            print("Data berhasil diupdate!")
-        else:
+        if not node:
             print("Data tidak ditemukan!")
+            return
 
-    def delete(self, name, file):
+        p = node.person
+
+        self.history.append(
+            (
+                "update",
+                p.anak,
+                p.ayah,
+                p.ibu,
+                p.kakek_ayah,
+                p.nenek_ayah,
+                p.kakek_ibu,
+                p.nenek_ibu
+            )
+        )
+
+        p.ayah = ayah
+        p.ibu = ibu
+        p.kakek_ayah = kakek_ayah
+        p.nenek_ayah = nenek_ayah
+        p.kakek_ibu = kakek_ibu
+        p.nenek_ibu = nenek_ibu
+
+        self.save_all(file)
+
+        print("Data berhasil diupdate!")
+
+    def delete(self, anak, file):
         current = self.head
         prev = None
 
         while current:
 
-            if current.person.name == name:
+            if current.person.anak.lower() == anak.lower():
+
+                p = current.person
 
                 self.history.append(
                     (
                         "delete",
-                        current.person.name,
-                        current.person.parent1,
-                        current.person.parent2
+                        p.anak,
+                        p.ayah,
+                        p.ibu,
+                        p.kakek_ayah,
+                        p.nenek_ayah,
+                        p.kakek_ibu,
+                        p.nenek_ibu
                     )
                 )
 
@@ -212,7 +276,7 @@ class FamilyTree:
 
         while current:
 
-            if keyword.lower() in current.person.name.lower():
+            if keyword.lower() in current.person.anak.lower():
                 self.display_tree(current.person)
                 found = True
 
@@ -229,39 +293,43 @@ class FamilyTree:
         action = self.history.pop()
 
         if action[0] == "create":
+
             self.delete(action[1], file)
 
             if self.history:
                 self.history.pop()
 
+        elif action[0] == "delete":
+
+            self.create(
+                action[1],
+                action[2],
+                action[3],
+                action[4],
+                action[5],
+                action[6],
+                action[7],
+                file
+            )
+
+            if self.history:
+                self.history.pop()
+
         elif action[0] == "update":
+
             node = self.find(action[1])
 
             if node:
-                node.person.parent1 = action[2]
-                node.person.parent2 = action[3]
+                p = node.person
 
-        elif action[0] == "delete":
+                p.ayah = action[2]
+                p.ibu = action[3]
+                p.kakek_ayah = action[4]
+                p.nenek_ayah = action[5]
+                p.kakek_ibu = action[6]
+                p.nenek_ibu = action[7]
 
-            person = Person(
-                action[1],
-                action[2],
-                action[3]
-            )
-
-            new_node = Node(person)
-
-            if self.head is None:
-                self.head = new_node
-            else:
-                current = self.head
-
-                while current.next:
-                    current = current.next
-
-                current.next = new_node
-
-        self.save_all(file)
+                self.save_all(file)
 
         print("Undo berhasil!")
 
@@ -285,26 +353,59 @@ def main():
         pilihan = input("Pilih menu: ")
 
         if pilihan == "1":
-            name = input("Nama: ")
-            p1 = input("Ayah (isi '-' jika tidak ada): ")
-            p2 = input("Ibu (isi '-' jika tidak ada): ")
-            ft.create(name, p1, p2, file)
+
+            anak = input("Nama Anak       : ")
+            ayah = input("Ayah            : ")
+            ibu = input("Ibu             : ")
+            kakek_ayah = input("Kakek Ayah      : ")
+            nenek_ayah = input("Nenek Ayah      : ")
+            kakek_ibu = input("Kakek Ibu       : ")
+            nenek_ibu = input("Nenek Ibu       : ")
+
+            ft.create(
+                anak,
+                ayah,
+                ibu,
+                kakek_ayah,
+                nenek_ayah,
+                kakek_ibu,
+                nenek_ibu,
+                file
+            )
 
         elif pilihan == "2":
             ft.read()
 
         elif pilihan == "3":
-            name = input("Nama: ")
-            p1 = input("Ayah baru: ")
-            p2 = input("Ibu baru: ")
-            ft.update(name, p1, p2, file)
+
+            anak = input("Nama Anak yang ingin diupdate: ")
+
+            ayah = input("Ayah baru       : ")
+            ibu = input("Ibu baru        : ")
+            kakek_ayah = input("Kakek Ayah baru : ")
+            nenek_ayah = input("Nenek Ayah baru : ")
+            kakek_ibu = input("Kakek Ibu baru  : ")
+            nenek_ibu = input("Nenek Ibu baru  : ")
+
+            ft.update(
+                anak,
+                ayah,
+                ibu,
+                kakek_ayah,
+                nenek_ayah,
+                kakek_ibu,
+                nenek_ibu,
+                file
+            )
 
         elif pilihan == "4":
-            name = input("Nama yang ingin dihapus: ")
-            ft.delete(name, file)
+
+            anak = input("Nama Anak yang ingin dihapus: ")
+            ft.delete(anak, file)
 
         elif pilihan == "5":
-            keyword = input("Cari nama: ")
+
+            keyword = input("Cari nama anak: ")
             ft.search(keyword)
 
         elif pilihan == "6":
