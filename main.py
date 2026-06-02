@@ -33,19 +33,40 @@ class FamilyTree:
         self.save_all(file)
         print("Data berhasil ditambahkan!")
 
+    def display_tree(self, p):
+        ayah = self.members.get(p.parent1)
+        kakek_ayah = ayah.parent1 if ayah else "-"
+        nenek_ayah = ayah.parent2 if ayah else "-"
+        ibu = self.members.get(p.parent2)
+        kakek_ibu = ibu.parent1 if ibu else "-"
+        nenek_ibu = ibu.parent2 if ibu else "-"
+        print(f"Anak: {p.name}")
+        print(f"├── Ayah: {p.parent1}")
+        print(f"│   ├── Kakek: {kakek_ayah}")
+        print(f"│   └── Nenek: {nenek_ayah}")
+        print(f"└── Ibu: {p.parent2}")
+        print(f"    ├── Kakek: {kakek_ibu}")
+        print(f"    └── Nenek: {nenek_ibu}")
+        print("-" * 35)
+
     def read(self):
-        print("\n=== POHON KELUARGA (1 LEVEL) ===")
+        print("\n=== POHON KELUARGA ===")
 
         if not self.members:
             print("Belum ada data.")
             return
 
-        for i, p in enumerate(self.members.values(), start=1):
-            print(f"[{i}]")
-            print(f"{p.parent1} ── {p.parent2}")
-            print("      │")
-            print(f"    {p.name}")
-            print("-" * 25)
+        per_page = 2 
+        count = 0
+
+        for p in self.members.values():
+            self.display_tree(p)
+            count += 1
+            if count % per_page == 0 and count < len(self.members):
+                lanjut = input(f"Tampil {count}/{len(self.members)} data. Tekan Enter untuk lanjut (atau ketik 'q' untuk berhenti): ")
+                if lanjut.lower() == 'q':
+                    print("Kembali ke menu utama.")
+                    return
 
     def update(self, name, new_p1, new_p2, file):
         if name in self.members:
@@ -69,19 +90,13 @@ class FamilyTree:
 
         for p in self.members.values():
 
-            if keyword.lower() in p.name.lower():
-
-                print("\n=== DATA DITEMUKAN ===")
-                print(f"{p.parent1} ── {p.parent2}")
-                print("      │")
-                print(f"    {p.name}")
-                print("-" * 25)
-
-                found = True
+            for p in self.members.values():
+                if keyword.lower() in p.name.lower():
+                    self.display_tree(p)
+                    found = True
 
         if not found:
             print("Data tidak ditemukan!")
-
 
 def main():
     file = "bleh.csv"
@@ -114,6 +129,10 @@ def main():
             p2 = input("Ibu baru: ")
             ft.update(name, p1, p2, file)
 
+        elif pilihan == "4":
+            name = input("Nama Anak yang ingin dihapus: ")
+            ft.delete(name, file)
+
         elif pilihan == "5":
             keyword = input("Cari nama: ")
             ft.search(keyword)
@@ -125,5 +144,5 @@ def main():
         else:
             print("Pilihan tidak valid!")
 
-
-main()
+if __name__ == "__main__":
+    main()
