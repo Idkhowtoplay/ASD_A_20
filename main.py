@@ -99,6 +99,23 @@ class FamilyTree:
             print("Data sudah ada!")
             return
 
+
+        # Validasi nama
+        data_nama = [
+            anak,
+            ayah,
+            ibu,
+            kakek_ayah,
+            nenek_ayah,
+            kakek_ibu,
+            nenek_ibu
+        ]
+
+        for nama in data_nama:
+            if any(char.isdigit() for char in nama):
+                print("Nama tidak boleh mengandung angka/simbol")
+                return
+
         person = Person(
             anak,
             ayah,
@@ -355,18 +372,18 @@ class FamilyTree:
         return result
 
     def _merge_sort(self, head):
-            if head is None or head.next is None:
-                return head
+        if head is None or head.next is None:
+            return head
 
-            middle = self._get_middle(head)
-            next_to_middle = middle.next
-            middle.next = None
+        middle = self._get_middle(head)
+        next_to_middle = middle.next
+        middle.next = None
 
-            left = self._merge_sort(head)
-            right = self._merge_sort(next_to_middle)
+        left = self._merge_sort(head)
+        right = self._merge_sort(next_to_middle)
 
-            sorted_list = self._sorted_merge(left, right)
-            return sorted_list
+        sorted_list = self._sorted_merge(left, right)
+        return sorted_list
 
     def sort_data(self, file):
         if self.head is None or self.head.next is None:
@@ -445,12 +462,12 @@ def main():
 
         elif pilihan == "4":
 
-            anak = input("Nama Anak yang ingin dihapus: ")
+            anak = input("Nama Keluarga yang ingin dihapus: ")
             ft.delete(anak, file)
 
         elif pilihan == "5":
 
-            keyword = input("Cari nama anak: ")
+            keyword = input("Cari nama Keluarga: ")
             ft.search(keyword)
 
         elif pilihan == "6":
