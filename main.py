@@ -129,7 +129,7 @@ class FamilyTree:
 
     def display_tree(self, p):
         print("\n" + "═" * 55)
-        print(f" 🌳 SILSILAH KELUARGA : {p.anak.upper()} ".center(55, " "))
+        print(f" SILSILAH KELUARGA : {p.anak.upper()} ".center(55, " "))
         print("═" * 55)
 
         print("\n 👨 [KELUARGA PIHAK AYAH]")
